@@ -26,7 +26,10 @@
     "@linear/sdk": "^29.0.0",
     "@oclif/core": "^4.3.0",
     "@oclif/plugin-autocomplete": "^3.2.0",
-    "@oclif/plugin-help": "^6.2.0"
+    "@oclif/plugin-help": "^6.2.0",
+    "cli-table3": "^0.6.5",
+    "open": "^11.0.0",
+    "picocolors": "^1.1.1"
   },
   "devDependencies": {
     "@oclif/prettier-config": "^0.2.1",
@@ -56,6 +59,9 @@
       },
       "issues": {
         "description": "Issue management commands"
+      },
+      "teams": {
+        "description": "Team management commands"
       }
     }
   },

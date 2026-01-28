@@ -1,16 +1,50 @@
 import {Command, Flags} from '@oclif/core'
 import {getClient} from '../../lib/client.js'
-import {successList, print} from '../../lib/output.js'
+import {successList, print, printList} from '../../lib/output.js'
 import {handleError} from '../../lib/errors.js'
+import {colors, truncate, formatPriority, type ColumnDef} from '../../lib/formatter.js'
 import type {LinearDocument} from '@linear/sdk'
+import type {OutputFormat} from '../../lib/types.js'
 
 type IssueFilter = LinearDocument.IssueFilter
+
+interface IssueData {
+  id: string
+  identifier: string
+  title: string
+  description: string | undefined
+  priority: number
+  priorityLabel: string
+  estimate: number | undefined
+  url: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+const COLUMNS: ColumnDef<IssueData>[] = [
+  {
+    key: 'identifier',
+    header: 'ID',
+    format: (value) => colors.cyan(String(value)),
+  },
+  {
+    key: 'priority',
+    header: 'PRI',
+    format: (value) => formatPriority(Number(value)),
+  },
+  {
+    key: 'title',
+    header: 'TITLE',
+    format: (value) => truncate(String(value), 50),
+  },
+]
 
 export default class IssuesList extends Command {
   static override description = 'List issues with optional filtering'
 
   static override examples = [
     '<%= config.bin %> issues list',
+    '<%= config.bin %> issues list --format table',
     '<%= config.bin %> issues list --team ENG',
     '<%= config.bin %> issues list --assignee me',
     '<%= config.bin %> issues list --filter \'{"state":{"name":{"eq":"In Progress"}}}\'',
@@ -18,6 +52,12 @@ export default class IssuesList extends Command {
   ]
 
   static override flags = {
+    format: Flags.string({
+      char: 'F',
+      description: 'Output format',
+      options: ['json', 'table', 'plain'],
+      default: 'json',
+    }),
     team: Flags.string({
       char: 't',
       description: 'Filter by team key (e.g., ENG)',
@@ -46,6 +86,7 @@ export default class IssuesList extends Command {
   public async run(): Promise<void> {
     try {
       const {flags} = await this.parse(IssuesList)
+      const format = flags.format as OutputFormat
       const client = getClient()
 
       // Build filter
@@ -86,27 +127,36 @@ export default class IssuesList extends Command {
       })
 
       // Map to clean objects
-      const data = issues.nodes.map((issue) => ({
+      const data: IssueData[] = issues.nodes.map((issue) => ({
         id: issue.id,
         identifier: issue.identifier,
         title: issue.title,
-        description: issue.description,
+        description: issue.description ?? undefined,
         priority: issue.priority,
         priorityLabel: issue.priorityLabel,
-        estimate: issue.estimate,
+        estimate: issue.estimate ?? undefined,
         url: issue.url,
         createdAt: issue.createdAt,
         updatedAt: issue.updatedAt,
       }))
 
-      print(
-        successList(data, {
-          hasNextPage: issues.pageInfo.hasNextPage,
-          hasPreviousPage: issues.pageInfo.hasPreviousPage,
-          startCursor: issues.pageInfo.startCursor,
-          endCursor: issues.pageInfo.endCursor,
-        }),
-      )
+      const pageInfo = {
+        hasNextPage: issues.pageInfo.hasNextPage,
+        hasPreviousPage: issues.pageInfo.hasPreviousPage,
+        startCursor: issues.pageInfo.startCursor,
+        endCursor: issues.pageInfo.endCursor,
+      }
+
+      if (format === 'json') {
+        print(successList(data, pageInfo))
+      } else {
+        printList(data, format, {
+          columns: COLUMNS,
+          primaryKey: 'identifier',
+          secondaryKey: 'title',
+          pageInfo,
+        })
+      }
     } catch (err) {
       handleError(err)
       this.exit(1)

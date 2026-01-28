@@ -3,6 +3,14 @@
  * All outputs are JSON-formatted for easy parsing by LLMs.
  */
 
+/**
+ * Output format for CLI commands.
+ * - json: Machine-readable JSON (default, for LLMs/scripts)
+ * - table: Human-readable colored table
+ * - plain: Minimal output (IDs/identifiers only)
+ */
+export type OutputFormat = 'json' | 'table' | 'plain'
+
 export interface PageInfo {
   hasNextPage: boolean
   hasPreviousPage: boolean
