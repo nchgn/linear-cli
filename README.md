@@ -1,4 +1,4 @@
-# linear-cli
+# linear-cli-agents
 
 A CLI for interacting with [Linear](https://linear.app), designed for LLMs and agents.
 
