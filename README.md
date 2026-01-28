@@ -11,9 +11,12 @@ A CLI for interacting with [Linear](https://linear.app), designed for LLMs and a
 - **JSON output**: All commands return structured JSON, perfect for parsing by LLMs
 - **Multiple formats**: JSON (default), table (colored), or plain text output
 - **Schema introspection**: Discover available operations programmatically
-- **Full CRUD for issues**: List, create, update, and delete issues
-- **Team management**: List and browse teams
+- **Full CRUD**: Issues, projects, labels, comments, templates, milestones
+- **Issue relations**: Manage blocks, duplicates, and related issues
+- **Project management**: Projects, milestones, and status updates
+- **Team management**: List and browse teams, states, users
 - **Browser integration**: Open issues, teams, inbox directly in Linear
+- **Search**: Find issues across workspace
 - **Raw GraphQL queries**: Execute any GraphQL query directly
 
 ## Installation
@@ -78,6 +81,166 @@ linear issues update ENG-123 --state-id <state-id> --assignee-id <user-id>
 
 # Delete an issue (moves to trash)
 linear issues delete ENG-123
+
+# Archive/unarchive an issue
+linear issues archive ENG-123
+linear issues archive ENG-123 --unarchive
+
+# Manage labels on issues
+linear issues add-labels ENG-123 --label-ids LABEL_ID1,LABEL_ID2
+linear issues remove-labels ENG-123 --label-ids LABEL_ID1
+```
+
+### Projects
+
+```bash
+# List projects
+linear projects list
+linear projects list --team ENG
+linear projects list --state started
+
+# Get project details
+linear projects get PROJECT_ID
+
+# Create a project
+linear projects create --name "Q1 Goals" --team-ids TEAM_ID
+linear projects create --name "Feature X" --team-ids TEAM_ID --target-date 2024-06-30
+
+# Update a project
+linear projects update PROJECT_ID --name "Updated Name"
+linear projects update PROJECT_ID --state completed
+
+# Delete a project
+linear projects delete PROJECT_ID
+
+# Archive/unarchive a project
+linear projects archive PROJECT_ID
+linear projects archive PROJECT_ID --unarchive
+```
+
+### Project Milestones
+
+```bash
+# List milestones for a project
+linear milestones list PROJECT_ID
+
+# Get milestone details
+linear milestones get MILESTONE_ID
+
+# Create a milestone
+linear milestones create PROJECT_ID --name "Alpha Release" --target-date 2024-03-01
+
+# Update a milestone
+linear milestones update MILESTONE_ID --name "Beta Release"
+```
+
+### Project Updates
+
+```bash
+# List status updates for a project
+linear project-updates list PROJECT_ID
+
+# Get update details
+linear project-updates get UPDATE_ID
+
+# Create a status update
+linear project-updates create PROJECT_ID --body "Sprint completed" --health onTrack
+
+# Update a status update
+linear project-updates update UPDATE_ID --body "Updated status"
+```
+
+### Issue Relations
+
+```bash
+# List relations for an issue
+linear relations list ENG-123
+
+# Create a relation
+linear relations create ENG-123 ENG-456 --type blocks
+linear relations create ENG-123 ENG-456 --type duplicate
+linear relations create ENG-123 ENG-456 --type related
+
+# Delete a relation
+linear relations delete RELATION_ID
+```
+
+### Labels
+
+```bash
+# List labels
+linear labels list
+linear labels list --team ENG
+
+# Create a label
+linear labels create --name "Bug" --color "#FF0000"
+linear labels create --name "Feature" --color "#00FF00" --team-id TEAM_ID
+
+# Update a label
+linear labels update LABEL_ID --name "Critical Bug" --color "#FF0000"
+
+# Delete a label
+linear labels delete LABEL_ID
+```
+
+### Templates
+
+```bash
+# List templates
+linear templates list
+linear templates list --team ENG
+
+# Get template details
+linear templates get TEMPLATE_ID
+
+# Create a template
+linear templates create --name "Bug Report" --type issue --team-id TEAM_ID \
+  --template-data '{"title":"Bug: ","priority":2}'
+
+# Update a template
+linear templates update TEMPLATE_ID --name "Updated Template"
+```
+
+### Comments
+
+```bash
+# List comments on an issue
+linear comments list ENG-123
+
+# Add a comment
+linear comments add ENG-123 --body "This looks good!"
+
+# Update a comment
+linear comments update COMMENT_ID --body "Updated comment"
+
+# Delete a comment
+linear comments delete COMMENT_ID
+```
+
+### States
+
+```bash
+# List workflow states
+linear states list
+linear states list --team ENG
+```
+
+### Users
+
+```bash
+# List users
+linear users list
+
+# Get user details
+linear users get USER_ID
+```
+
+### Search
+
+```bash
+# Search issues
+linear search "login bug"
+linear search "SSO" --team ENG
 ```
 
 ### Teams
