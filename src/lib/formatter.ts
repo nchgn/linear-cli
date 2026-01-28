@@ -41,10 +41,7 @@ export interface ColumnDef<T> {
 /**
  * Format data as a colored table.
  */
-export const formatTable = <T extends Record<string, unknown>>(
-  data: T[],
-  columns: ColumnDef<T>[],
-): string => {
+export const formatTable = <T extends Record<string, unknown>>(data: T[], columns: ColumnDef<T>[]): string => {
   if (data.length === 0) {
     return colors.dim('No results found.')
   }

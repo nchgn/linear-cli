@@ -1,6 +1,6 @@
-# Contributing to linear-cli
+# Contributing to linear-cli-agents
 
-Thank you for your interest in contributing to linear-cli! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to linear-cli-agents! This document provides guidelines and instructions for contributing.
 
 ## Development Setup
 
@@ -14,8 +14,8 @@ Thank you for your interest in contributing to linear-cli! This document provide
 1. Fork and clone the repository:
 
    ```bash
-   git clone https://github.com/YOUR_USERNAME/linear-cli.git
-   cd linear-cli
+   git clone https://github.com/YOUR_USERNAME/linear-cli-agents.git
+   cd linear-cli-agents
    ```
 
 2. Install dependencies:
@@ -65,7 +65,7 @@ pnpm build    # Build the project
 ## Project Structure
 
 ```
-linear-cli/
+linear-cli-agents/
 ├── src/
 │   ├── commands/      # CLI commands (oclif structure)
 │   │   ├── auth/      # Authentication commands

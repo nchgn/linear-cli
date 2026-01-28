@@ -4,7 +4,7 @@ import {existsSync, mkdirSync, readFileSync, writeFileSync, renameSync, unlinkSy
 import type {ConfigFile} from './types.js'
 import {CliError, ErrorCodes} from './errors.js'
 
-const CONFIG_DIR = join(homedir(), '.linear-cli')
+const CONFIG_DIR = join(homedir(), '.linear-cli-agents')
 const CONFIG_FILE = join(CONFIG_DIR, 'config.json')
 
 /**

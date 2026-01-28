@@ -9,11 +9,7 @@ export default class Me extends Command {
 
   static override aliases = ['whoami']
 
-  static override examples = [
-    '<%= config.bin %> me',
-    '<%= config.bin %> me --format table',
-    '<%= config.bin %> whoami',
-  ]
+  static override examples = ['<%= config.bin %> me', '<%= config.bin %> me --format table', '<%= config.bin %> whoami']
 
   static override flags = {
     format: Flags.string({

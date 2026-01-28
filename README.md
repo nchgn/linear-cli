@@ -1,7 +1,7 @@
 # linear-cli-agents
 
 [![npm version](https://img.shields.io/npm/v/linear-cli-agents.svg)](https://www.npmjs.com/package/linear-cli-agents)
-[![CI](https://github.com/nchgn/linear-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/nchgn/linear-cli/actions/workflows/ci.yml)
+[![CI](https://github.com/nchgn/linear-cli-agents/actions/workflows/ci.yml/badge.svg)](https://github.com/nchgn/linear-cli-agents/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A CLI for interacting with [Linear](https://linear.app), designed for LLMs and agents.

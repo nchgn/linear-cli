@@ -10,7 +10,7 @@
 
 ### API Key Storage
 
-The CLI stores your Linear API key locally in `~/.linear-cli/config.json` with:
+The CLI stores your Linear API key locally in `~/.linear-cli-agents/config.json` with:
 
 - File permissions set to `600` (owner read/write only)
 - Atomic writes to prevent corruption

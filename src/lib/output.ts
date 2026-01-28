@@ -59,7 +59,12 @@ export const printList = <T extends object>(
   }
 
   if (format === 'table' && options.columns) {
-    console.log(formatTable(data as unknown as Record<string, unknown>[], options.columns as unknown as ColumnDef<Record<string, unknown>>[]))
+    console.log(
+      formatTable(
+        data as unknown as Record<string, unknown>[],
+        options.columns as unknown as ColumnDef<Record<string, unknown>>[],
+      ),
+    )
     if (options.pageInfo?.hasNextPage) {
       console.log(colors.dim(`\nMore results available. Use --after ${options.pageInfo.endCursor}`))
     }
@@ -67,10 +72,12 @@ export const printList = <T extends object>(
   }
 
   if (format === 'plain') {
-    console.log(formatOutput(format, data as unknown as Record<string, unknown>[], {
-      primaryKey: options.primaryKey as keyof Record<string, unknown>,
-      secondaryKey: options.secondaryKey as keyof Record<string, unknown>,
-    }))
+    console.log(
+      formatOutput(format, data as unknown as Record<string, unknown>[], {
+        primaryKey: options.primaryKey as keyof Record<string, unknown>,
+        secondaryKey: options.secondaryKey as keyof Record<string, unknown>,
+      }),
+    )
     return
   }
 
