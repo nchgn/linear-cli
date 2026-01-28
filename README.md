@@ -12,9 +12,9 @@ A CLI for interacting with [Linear](https://linear.app), designed for LLMs and a
 ## Installation
 
 ```bash
-npm install -g linear-cli
+npm install -g linear-cli-agents
 # or
-pnpm add -g linear-cli
+pnpm add -g linear-cli-agents
 ```
 
 ## Authentication
