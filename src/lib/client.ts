@@ -1,5 +1,5 @@
-import {LinearClient} from '@linear/sdk';
-import {requireApiKey} from './config.js';
+import {LinearClient} from '@linear/sdk'
+import {requireApiKey} from './config.js'
 
 /**
  * Get a Linear client instance authenticated with the configured API key.
@@ -9,9 +9,9 @@ import {requireApiKey} from './config.js';
  * @throws {CliError} When no API key is configured (NOT_AUTHENTICATED)
  */
 export const getClient = (): LinearClient => {
-  const apiKey = requireApiKey();
-  return new LinearClient({apiKey});
-};
+  const apiKey = requireApiKey()
+  return new LinearClient({apiKey})
+}
 
 /**
  * Create a new Linear client with a specific API key.
@@ -21,5 +21,5 @@ export const getClient = (): LinearClient => {
  * @returns A configured LinearClient instance
  */
 export const createClient = (apiKey: string): LinearClient => {
-  return new LinearClient({apiKey});
-};
+  return new LinearClient({apiKey})
+}

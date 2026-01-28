@@ -1,5 +1,9 @@
 # linear-cli-agents
 
+[![npm version](https://img.shields.io/npm/v/linear-cli-agents.svg)](https://www.npmjs.com/package/linear-cli-agents)
+[![CI](https://github.com/nchgn/linear-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/nchgn/linear-cli/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A CLI for interacting with [Linear](https://linear.app), designed for LLMs and agents.
 
 ## Features
@@ -162,6 +166,51 @@ pnpm build
 # Run tests
 pnpm test
 ```
+
+## Troubleshooting
+
+### Authentication Issues
+
+**"Not authenticated" error:**
+
+```bash
+# Check current auth status
+linear auth status
+
+# Re-authenticate
+linear auth login --key lin_api_xxxxx
+```
+
+**Using environment variable:**
+
+```bash
+export LINEAR_API_KEY=lin_api_xxxxx
+linear auth status  # Should show source: environment
+```
+
+### Common Errors
+
+| Error Code          | Cause                      | Solution                                        |
+| ------------------- | -------------------------- | ----------------------------------------------- |
+| `NOT_AUTHENTICATED` | No API key configured      | Run `linear auth login` or set `LINEAR_API_KEY` |
+| `INVALID_API_KEY`   | API key expired or invalid | Generate a new key in Linear settings           |
+| `NOT_FOUND`         | Resource doesn't exist     | Check the issue/team identifier                 |
+| `RATE_LIMITED`      | Too many requests          | Wait before retrying                            |
+
+### Getting Help
+
+```bash
+# See all commands
+linear --help
+
+# Get help for a specific command
+linear issues --help
+linear issues create --help
+```
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.
 
 ## License
 

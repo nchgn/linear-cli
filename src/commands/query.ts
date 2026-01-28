@@ -1,23 +1,23 @@
-import {Command, Flags} from '@oclif/core';
-import {requireApiKey} from '../lib/config.js';
-import {success, error, print} from '../lib/output.js';
-import {handleError, CliError, ErrorCodes} from '../lib/errors.js';
+import {Command, Flags} from '@oclif/core'
+import {requireApiKey} from '../lib/config.js'
+import {success, error, print} from '../lib/output.js'
+import {handleError, CliError, ErrorCodes} from '../lib/errors.js'
 
-const LINEAR_API_URL = 'https://api.linear.app/graphql';
+const LINEAR_API_URL = 'https://api.linear.app/graphql'
 
 interface GraphQLResponse {
-  data?: unknown;
-  errors?: Array<{message: string; locations?: unknown; path?: unknown}>;
+  data?: unknown
+  errors?: Array<{message: string; locations?: unknown; path?: unknown}>
 }
 
 export default class Query extends Command {
-  static override description = 'Execute a raw GraphQL query against the Linear API';
+  static override description = 'Execute a raw GraphQL query against the Linear API'
 
   static override examples = [
     '<%= config.bin %> query --gql "query { viewer { id name email } }"',
     '<%= config.bin %> query --gql "query { teams { nodes { id key name } } }"',
     '<%= config.bin %> query --gql "query($id: String!) { issue(id: $id) { title } }" --variables \'{"id":"xxx"}\'',
-  ];
+  ]
 
   static override flags = {
     gql: Flags.string({
@@ -34,29 +34,29 @@ export default class Query extends Command {
       description: 'Request timeout in seconds (default: 30)',
       default: 30,
     }),
-  };
+  }
 
   public async run(): Promise<void> {
-    const {flags} = await this.parse(Query);
-    const controller = new AbortController();
-    let timeoutHandle: NodeJS.Timeout | undefined;
-    const timeoutSeconds = flags.timeout ?? 30;
+    const {flags} = await this.parse(Query)
+    const controller = new AbortController()
+    let timeoutHandle: NodeJS.Timeout | undefined
+    const timeoutSeconds = flags.timeout ?? 30
 
     try {
-      const apiKey = requireApiKey();
+      const apiKey = requireApiKey()
 
-      let variables: Record<string, unknown> | undefined;
+      let variables: Record<string, unknown> | undefined
       if (flags.variables) {
         try {
-          variables = JSON.parse(flags.variables) as Record<string, unknown>;
+          variables = JSON.parse(flags.variables) as Record<string, unknown>
         } catch {
-          print(error('INVALID_INPUT', 'Invalid JSON in --variables flag'));
-          this.exit(1);
-          return;
+          print(error('INVALID_INPUT', 'Invalid JSON in --variables flag'))
+          this.exit(1)
+          return
         }
       }
 
-      timeoutHandle = setTimeout(() => controller.abort(), timeoutSeconds * 1000);
+      timeoutHandle = setTimeout(() => controller.abort(), timeoutSeconds * 1000)
 
       const response = await fetch(LINEAR_API_URL, {
         method: 'POST',
@@ -69,51 +69,49 @@ export default class Query extends Command {
           variables,
         }),
         signal: controller.signal,
-      });
+      })
 
-      clearTimeout(timeoutHandle);
+      clearTimeout(timeoutHandle)
 
       if (!response.ok) {
-        print(
-          error('API_ERROR', `Linear API returned ${response.status}: ${response.statusText}`)
-        );
-        this.exit(1);
-        return;
+        print(error('API_ERROR', `Linear API returned ${response.status}: ${response.statusText}`))
+        this.exit(1)
+        return
       }
 
-      let result: GraphQLResponse;
+      let result: GraphQLResponse
       try {
-        result = (await response.json()) as GraphQLResponse;
+        result = (await response.json()) as GraphQLResponse
       } catch (parseError) {
         throw new CliError(
           ErrorCodes.API_ERROR,
           `Failed to parse Linear API response: ${parseError instanceof Error ? parseError.message : 'Invalid JSON'}`,
-          {status: response.status, statusText: response.statusText}
-        );
+          {status: response.status, statusText: response.statusText},
+        )
       }
 
       if (result.errors && result.errors.length > 0) {
         print(
           error('GRAPHQL_ERROR', result.errors[0].message, {
             errors: result.errors,
-          })
-        );
-        this.exit(1);
-        return;
+          }),
+        )
+        this.exit(1)
+        return
       }
 
-      print(success(result.data));
+      print(success(result.data))
     } catch (err) {
-      if (timeoutHandle) clearTimeout(timeoutHandle);
+      if (timeoutHandle) clearTimeout(timeoutHandle)
 
       if (err instanceof Error && err.name === 'AbortError') {
-        print(error(ErrorCodes.API_ERROR, `Request timed out after ${timeoutSeconds} seconds`));
-        this.exit(1);
-        return;
+        print(error(ErrorCodes.API_ERROR, `Request timed out after ${timeoutSeconds} seconds`))
+        this.exit(1)
+        return
       }
 
-      handleError(err);
-      this.exit(1);
+      handleError(err)
+      this.exit(1)
     }
   }
 }

@@ -1,4 +1,4 @@
-import {error, print} from './output.js';
+import {error, print} from './output.js'
 
 /**
  * Standard error codes for the CLI.
@@ -23,9 +23,9 @@ export const ErrorCodes = {
   // System errors
   CONFIG_ERROR: 'CONFIG_ERROR',
   UNKNOWN_ERROR: 'UNKNOWN_ERROR',
-} as const;
+} as const
 
-export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];
+export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes]
 
 /**
  * CLI-specific error class that produces structured JSON output.
@@ -34,18 +34,18 @@ export class CliError extends Error {
   constructor(
     public readonly code: ErrorCode,
     message: string,
-    public readonly details?: Record<string, unknown>
+    public readonly details?: Record<string, unknown>,
   ) {
-    super(message);
-    this.name = 'CliError';
+    super(message)
+    this.name = 'CliError'
   }
 
   toResponse() {
-    return error(this.code, this.message, this.details);
+    return error(this.code, this.message, this.details)
   }
 
   print() {
-    print(this.toResponse());
+    print(this.toResponse())
   }
 }
 
@@ -53,9 +53,9 @@ export class CliError extends Error {
  * Map error message patterns to structured error responses.
  */
 const ERROR_PATTERNS: Array<{
-  test: (message: string) => boolean;
-  code: ErrorCode;
-  message: string | null;
+  test: (message: string) => boolean
+  code: ErrorCode
+  message: string | null
 }> = [
   {
     test: (msg) => msg.includes('401') || msg.includes('Unauthorized'),
@@ -72,27 +72,27 @@ const ERROR_PATTERNS: Array<{
     code: ErrorCodes.RATE_LIMITED,
     message: 'Rate limit exceeded. Please wait before retrying.',
   },
-];
+]
 
 /**
  * Handle any error and convert to structured output.
  */
 export const handleError = (err: unknown): void => {
   if (err instanceof CliError) {
-    err.print();
-    return;
+    err.print()
+    return
   }
 
   if (err instanceof Error) {
-    const matched = ERROR_PATTERNS.find((pattern) => pattern.test(err.message));
+    const matched = ERROR_PATTERNS.find((pattern) => pattern.test(err.message))
     if (matched) {
-      print(error(matched.code, matched.message ?? err.message));
-      return;
+      print(error(matched.code, matched.message ?? err.message))
+      return
     }
 
-    print(error(ErrorCodes.API_ERROR, err.message));
-    return;
+    print(error(ErrorCodes.API_ERROR, err.message))
+    return
   }
 
-  print(error(ErrorCodes.UNKNOWN_ERROR, 'An unexpected error occurred'));
-};
+  print(error(ErrorCodes.UNKNOWN_ERROR, 'An unexpected error occurred'))
+}

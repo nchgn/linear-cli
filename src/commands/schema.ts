@@ -1,5 +1,5 @@
-import {Args, Command, Flags} from '@oclif/core';
-import {success, print} from '../lib/output.js';
+import {Args, Command, Flags} from '@oclif/core'
+import {success, print} from '../lib/output.js'
 
 /**
  * Schema definitions for all supported entities.
@@ -130,27 +130,27 @@ const ENTITY_SCHEMAS = {
       issueId: {type: 'ID!', required: true, description: 'Issue ID to comment on'},
     },
   },
-} as const;
+} as const
 
-type EntityName = keyof typeof ENTITY_SCHEMAS;
+type EntityName = keyof typeof ENTITY_SCHEMAS
 
 export default class Schema extends Command {
   static override description =
-    'Show schema information for entities (useful for LLMs to discover available operations)';
+    'Show schema information for entities (useful for LLMs to discover available operations)'
 
   static override examples = [
     '<%= config.bin %> schema',
     '<%= config.bin %> schema issues',
     '<%= config.bin %> schema --full',
     '<%= config.bin %> schema issues --include-examples',
-  ];
+  ]
 
   static override args = {
     entity: Args.string({
       description: 'Entity name (issues, projects, teams, users, cycles, labels, comments)',
       required: false,
     }),
-  };
+  }
 
   static override flags = {
     full: Flags.boolean({
@@ -161,10 +161,10 @@ export default class Schema extends Command {
       description: 'Include usage examples',
       default: false,
     }),
-  };
+  }
 
   public async run(): Promise<void> {
-    const {args, flags} = await this.parse(Schema);
+    const {args, flags} = await this.parse(Schema)
 
     if (flags.full) {
       // Return all schemas
@@ -173,34 +173,34 @@ export default class Schema extends Command {
           entities: Object.keys(ENTITY_SCHEMAS),
           schemas: ENTITY_SCHEMAS,
           note: 'Use "linear query" for raw GraphQL queries',
-        })
-      );
-      return;
+        }),
+      )
+      return
     }
 
     if (args.entity) {
       // Return specific entity schema
-      const entityName = args.entity.toLowerCase() as EntityName;
-      const schema = ENTITY_SCHEMAS[entityName];
+      const entityName = args.entity.toLowerCase() as EntityName
+      const schema = ENTITY_SCHEMAS[entityName]
 
       if (!schema) {
         print(
           success({
             error: `Unknown entity: ${args.entity}`,
             availableEntities: Object.keys(ENTITY_SCHEMAS),
-          })
-        );
-        return;
+          }),
+        )
+        return
       }
 
-      const result: Record<string, unknown> = {...schema};
+      const result: Record<string, unknown> = {...schema}
 
       if (!flags['include-examples'] && 'examples' in result) {
-        delete result.examples;
+        delete result.examples
       }
 
-      print(success(result));
-      return;
+      print(success(result))
+      return
     }
 
     // Return list of available entities with basic info
@@ -208,14 +208,14 @@ export default class Schema extends Command {
       name,
       description: schema.description,
       operations: schema.operations,
-    }));
+    }))
 
     print(
       success({
         entities,
         usage: 'Use "linear schema <entity>" for detailed schema',
         fullSchema: 'Use "linear schema --full" for complete schema',
-      })
-    );
+      }),
+    )
   }
 }

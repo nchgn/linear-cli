@@ -1,13 +1,13 @@
-import {Command, Flags} from '@oclif/core';
-import {getClient} from '../../lib/client.js';
-import {successList, print} from '../../lib/output.js';
-import {handleError} from '../../lib/errors.js';
-import type {LinearDocument} from '@linear/sdk';
+import {Command, Flags} from '@oclif/core'
+import {getClient} from '../../lib/client.js'
+import {successList, print} from '../../lib/output.js'
+import {handleError} from '../../lib/errors.js'
+import type {LinearDocument} from '@linear/sdk'
 
-type IssueFilter = LinearDocument.IssueFilter;
+type IssueFilter = LinearDocument.IssueFilter
 
 export default class IssuesList extends Command {
-  static override description = 'List issues with optional filtering';
+  static override description = 'List issues with optional filtering'
 
   static override examples = [
     '<%= config.bin %> issues list',
@@ -15,7 +15,7 @@ export default class IssuesList extends Command {
     '<%= config.bin %> issues list --assignee me',
     '<%= config.bin %> issues list --filter \'{"state":{"name":{"eq":"In Progress"}}}\'',
     '<%= config.bin %> issues list --first 50 --after cursor123',
-  ];
+  ]
 
   static override flags = {
     team: Flags.string({
@@ -41,41 +41,41 @@ export default class IssuesList extends Command {
     after: Flags.string({
       description: 'Cursor for pagination',
     }),
-  };
+  }
 
   public async run(): Promise<void> {
     try {
-      const {flags} = await this.parse(IssuesList);
-      const client = getClient();
+      const {flags} = await this.parse(IssuesList)
+      const client = getClient()
 
       // Build filter
-      let filter: IssueFilter = {};
+      let filter: IssueFilter = {}
 
       // Parse JSON filter if provided
       if (flags.filter) {
         try {
-          filter = JSON.parse(flags.filter) as IssueFilter;
+          filter = JSON.parse(flags.filter) as IssueFilter
         } catch {
-          throw new Error('Invalid JSON in --filter flag');
+          throw new Error('Invalid JSON in --filter flag')
         }
       }
 
       // Apply shorthand filters
       if (flags.team) {
-        filter.team = {key: {eq: flags.team}};
+        filter.team = {key: {eq: flags.team}}
       }
 
       if (flags.assignee) {
         if (flags.assignee === 'me') {
-          const viewer = await client.viewer;
-          filter.assignee = {id: {eq: viewer.id}};
+          const viewer = await client.viewer
+          filter.assignee = {id: {eq: viewer.id}}
         } else {
-          filter.assignee = {id: {eq: flags.assignee}};
+          filter.assignee = {id: {eq: flags.assignee}}
         }
       }
 
       if (flags.state) {
-        filter.state = {name: {eq: flags.state}};
+        filter.state = {name: {eq: flags.state}}
       }
 
       // Fetch issues
@@ -83,7 +83,7 @@ export default class IssuesList extends Command {
         filter,
         first: flags.first,
         after: flags.after,
-      });
+      })
 
       // Map to clean objects
       const data = issues.nodes.map((issue) => ({
@@ -97,7 +97,7 @@ export default class IssuesList extends Command {
         url: issue.url,
         createdAt: issue.createdAt,
         updatedAt: issue.updatedAt,
-      }));
+      }))
 
       print(
         successList(data, {
@@ -105,11 +105,11 @@ export default class IssuesList extends Command {
           hasPreviousPage: issues.pageInfo.hasPreviousPage,
           startCursor: issues.pageInfo.startCursor,
           endCursor: issues.pageInfo.endCursor,
-        })
-      );
+        }),
+      )
     } catch (err) {
-      handleError(err);
-      this.exit(1);
+      handleError(err)
+      this.exit(1)
     }
   }
 }

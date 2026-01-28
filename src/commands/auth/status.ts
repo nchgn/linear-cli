@@ -1,19 +1,19 @@
-import {Command} from '@oclif/core';
-import {getApiKey, getConfigPath} from '../../lib/config.js';
-import {createClient} from '../../lib/client.js';
-import {success, print} from '../../lib/output.js';
-import {handleError} from '../../lib/errors.js';
+import {Command} from '@oclif/core'
+import {getApiKey, getConfigPath} from '../../lib/config.js'
+import {createClient} from '../../lib/client.js'
+import {success, print} from '../../lib/output.js'
+import {handleError} from '../../lib/errors.js'
 
 export default class AuthStatus extends Command {
-  static override description = 'Check authentication status';
+  static override description = 'Check authentication status'
 
-  static override examples = ['<%= config.bin %> auth status'];
+  static override examples = ['<%= config.bin %> auth status']
 
   public async run(): Promise<void> {
-    await this.parse(AuthStatus);
+    await this.parse(AuthStatus)
 
     try {
-      const apiKey = getApiKey();
+      const apiKey = getApiKey()
 
       if (!apiKey) {
         print(
@@ -21,14 +21,14 @@ export default class AuthStatus extends Command {
             authenticated: false,
             message: 'Not authenticated',
             configPath: getConfigPath(),
-          })
-        );
-        return;
+          }),
+        )
+        return
       }
 
       // Verify the API key is still valid
-      const client = createClient(apiKey);
-      const viewer = await client.viewer;
+      const client = createClient(apiKey)
+      const viewer = await client.viewer
 
       print(
         success({
@@ -40,11 +40,11 @@ export default class AuthStatus extends Command {
           },
           source: process.env.LINEAR_API_KEY ? 'environment' : 'config',
           configPath: getConfigPath(),
-        })
-      );
+        }),
+      )
     } catch (err) {
-      handleError(err);
-      this.exit(1);
+      handleError(err)
+      this.exit(1)
     }
   }
 }

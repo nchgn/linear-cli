@@ -1,34 +1,31 @@
-import {Args, Command} from '@oclif/core';
-import {getClient} from '../../lib/client.js';
-import {success, print} from '../../lib/output.js';
-import {handleError, CliError, ErrorCodes} from '../../lib/errors.js';
-import {resolveIssueId} from '../../lib/issue-utils.js';
+import {Args, Command} from '@oclif/core'
+import {getClient} from '../../lib/client.js'
+import {success, print} from '../../lib/output.js'
+import {handleError, CliError, ErrorCodes} from '../../lib/errors.js'
+import {resolveIssueId} from '../../lib/issue-utils.js'
 
 export default class IssuesGet extends Command {
-  static override description = 'Get a single issue by ID or identifier';
+  static override description = 'Get a single issue by ID or identifier'
 
-  static override examples = [
-    '<%= config.bin %> issues get abc123',
-    '<%= config.bin %> issues get ENG-123',
-  ];
+  static override examples = ['<%= config.bin %> issues get abc123', '<%= config.bin %> issues get ENG-123']
 
   static override args = {
     id: Args.string({
       description: 'Issue ID or identifier (e.g., ENG-123)',
       required: true,
     }),
-  };
+  }
 
   public async run(): Promise<void> {
     try {
-      const {args} = await this.parse(IssuesGet);
-      const client = getClient();
+      const {args} = await this.parse(IssuesGet)
+      const client = getClient()
 
-      const issueId = await resolveIssueId(client, args.id);
-      const issue = await client.issue(issueId);
+      const issueId = await resolveIssueId(client, args.id)
+      const issue = await client.issue(issueId)
 
       if (!issue) {
-        throw new CliError(ErrorCodes.NOT_FOUND, `Issue ${args.id} not found`);
+        throw new CliError(ErrorCodes.NOT_FOUND, `Issue ${args.id} not found`)
       }
 
       // Fetch related data
@@ -38,7 +35,7 @@ export default class IssuesGet extends Command {
         issue.team,
         issue.labels(),
         issue.comments(),
-      ]);
+      ])
 
       print(
         success({
@@ -80,11 +77,11 @@ export default class IssuesGet extends Command {
             color: label.color,
           })),
           commentsCount: comments.nodes.length,
-        })
-      );
+        }),
+      )
     } catch (err) {
-      handleError(err);
-      this.exit(1);
+      handleError(err)
+      this.exit(1)
     }
   }
 }

@@ -4,36 +4,36 @@
  */
 
 export interface PageInfo {
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
-  startCursor?: string;
-  endCursor?: string;
+  hasNextPage: boolean
+  hasPreviousPage: boolean
+  startCursor?: string
+  endCursor?: string
 }
 
 export interface SuccessResponse<T> {
-  success: true;
-  data: T;
+  success: true
+  data: T
 }
 
 export interface SuccessListResponse<T> {
-  success: true;
-  data: T[];
-  pageInfo?: PageInfo;
+  success: true
+  data: T[]
+  pageInfo?: PageInfo
 }
 
 export interface ErrorResponse {
-  success: false;
+  success: false
   error: {
-    code: string;
-    message: string;
-    details?: Record<string, unknown>;
-  };
+    code: string
+    message: string
+    details?: Record<string, unknown>
+  }
 }
 
-export type CommandResponse<T> = SuccessResponse<T> | ErrorResponse;
-export type CommandListResponse<T> = SuccessListResponse<T> | ErrorResponse;
+export type CommandResponse<T> = SuccessResponse<T> | ErrorResponse
+export type CommandListResponse<T> = SuccessListResponse<T> | ErrorResponse
 
 export interface ConfigFile {
-  apiKey?: string;
-  defaultTeamId?: string;
+  apiKey?: string
+  defaultTeamId?: string
 }
