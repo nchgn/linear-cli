@@ -71,8 +71,9 @@ const COMMANDS: Record<string, CommandDef> = {
     args: {id: {description: 'Issue ID or identifier (e.g., ENG-123)', required: true}},
     flags: {
       format: {type: 'string', options: ['json', 'table', 'plain'], default: 'json'},
+      'with-attachments': {type: 'boolean', description: 'Include attachments (linked PRs, commits, etc.)'},
     },
-    examples: ['linear issues get ENG-123', 'linear issues get abc123-uuid'],
+    examples: ['linear issues get ENG-123', 'linear issues get ENG-123 --with-attachments'],
   },
   'issues create': {
     description: 'Create a new issue',
@@ -444,6 +445,124 @@ const COMMANDS: Record<string, CommandDef> = {
     examples: ['linear templates update TEMPLATE_ID --name "New Name"'],
   },
 
+  // Documents
+  'documents list': {
+    description: 'List documents',
+    flags: {
+      format: {type: 'string', options: ['json', 'table', 'plain'], default: 'json'},
+      first: {type: 'number', description: 'Number of results'},
+    },
+    examples: ['linear documents list'],
+  },
+  'documents get': {
+    description: 'Get document details',
+    args: {id: {description: 'Document ID', required: true}},
+    flags: {format: {type: 'string', options: ['json', 'table', 'plain'], default: 'json'}},
+    examples: ['linear documents get DOCUMENT_ID'],
+  },
+  'documents create': {
+    description: 'Create a new document',
+    flags: {
+      title: {type: 'string', char: 't', description: 'Document title', required: true},
+      content: {type: 'string', char: 'c', description: 'Document content (markdown)'},
+      'project-id': {type: 'string', description: 'Project ID to associate with'},
+      icon: {type: 'string', description: 'Document icon (emoji)'},
+      color: {type: 'string', description: 'Document color (hex)'},
+    },
+    examples: [
+      'linear documents create --title "My Document"',
+      'linear documents create --title "Notes" --content "# Heading\\n\\nContent"',
+    ],
+  },
+  'documents update': {
+    description: 'Update a document',
+    args: {id: {description: 'Document ID', required: true}},
+    flags: {
+      title: {type: 'string', char: 't', description: 'New title'},
+      content: {type: 'string', char: 'c', description: 'New content (markdown)'},
+      'project-id': {type: 'string', description: 'New project ID (empty to remove)'},
+      icon: {type: 'string', description: 'New icon (emoji)'},
+      color: {type: 'string', description: 'New color (hex)'},
+    },
+    examples: ['linear documents update DOCUMENT_ID --title "New Title"'],
+  },
+  'documents delete': {
+    description: 'Delete a document (moves to trash)',
+    args: {id: {description: 'Document ID', required: true}},
+    flags: {},
+    examples: ['linear documents delete DOCUMENT_ID'],
+  },
+
+  // Initiatives
+  'initiatives list': {
+    description: 'List initiatives',
+    flags: {
+      format: {type: 'string', options: ['json', 'table', 'plain'], default: 'json'},
+      status: {type: 'string', options: ['Planned', 'Active', 'Completed'], description: 'Filter by status'},
+      first: {type: 'number', description: 'Number of results'},
+    },
+    examples: [
+      'linear initiatives list',
+      'linear initiatives list --status Active',
+    ],
+  },
+  'initiatives get': {
+    description: 'Get initiative details',
+    args: {id: {description: 'Initiative ID', required: true}},
+    flags: {format: {type: 'string', options: ['json', 'table', 'plain'], default: 'json'}},
+    examples: ['linear initiatives get INITIATIVE_ID'],
+  },
+  'initiatives create': {
+    description: 'Create a new initiative',
+    flags: {
+      name: {type: 'string', char: 'n', description: 'Initiative name', required: true},
+      description: {type: 'string', char: 'd', description: 'Initiative description'},
+      status: {type: 'string', options: ['Planned', 'Active', 'Completed'], description: 'Initial status'},
+      'target-date': {type: 'string', description: 'Target completion date (YYYY-MM-DD)'},
+      'owner-id': {type: 'string', description: 'Owner user ID'},
+      icon: {type: 'string', description: 'Initiative icon (emoji)'},
+      color: {type: 'string', description: 'Initiative color (hex)'},
+    },
+    examples: [
+      'linear initiatives create --name "Q1 Goals"',
+      'linear initiatives create --name "Launch" --status Active --target-date 2024-12-31',
+    ],
+  },
+  'initiatives update': {
+    description: 'Update an initiative',
+    args: {id: {description: 'Initiative ID', required: true}},
+    flags: {
+      name: {type: 'string', char: 'n', description: 'New name'},
+      description: {type: 'string', char: 'd', description: 'New description'},
+      status: {type: 'string', options: ['Planned', 'Active', 'Completed'], description: 'New status'},
+      'target-date': {type: 'string', description: 'New target date (YYYY-MM-DD)'},
+      'owner-id': {type: 'string', description: 'New owner user ID'},
+      icon: {type: 'string', description: 'New icon (emoji)'},
+      color: {type: 'string', description: 'New color (hex)'},
+    },
+    examples: [
+      'linear initiatives update INITIATIVE_ID --status Completed',
+      'linear initiatives update INITIATIVE_ID --name "New Name"',
+    ],
+  },
+  'initiatives delete': {
+    description: 'Delete an initiative (moves to trash)',
+    args: {id: {description: 'Initiative ID', required: true}},
+    flags: {},
+    examples: ['linear initiatives delete INITIATIVE_ID'],
+  },
+  'initiatives archive': {
+    description: 'Archive or unarchive an initiative',
+    args: {id: {description: 'Initiative ID', required: true}},
+    flags: {
+      unarchive: {type: 'boolean', char: 'u', description: 'Unarchive instead of archive'},
+    },
+    examples: [
+      'linear initiatives archive INITIATIVE_ID',
+      'linear initiatives archive INITIATIVE_ID --unarchive',
+    ],
+  },
+
   // Config
   'config set': {
     description: 'Set a configuration value',
@@ -541,6 +660,19 @@ const COMMANDS: Record<string, CommandDef> = {
       'include-examples': {type: 'boolean', description: 'Include usage examples'},
     },
     examples: ['linear schema', 'linear schema issues', 'linear schema --full'],
+  },
+  upload: {
+    description: 'Upload a file to Linear and get the asset URL',
+    args: {file: {description: 'Path to the file to upload', required: true}},
+    flags: {
+      'content-type': {type: 'string', description: 'Override the content type (MIME type)'},
+      markdown: {type: 'boolean', char: 'm', description: 'Output as markdown link/image'},
+    },
+    examples: [
+      'linear upload ./screenshot.png',
+      'linear upload ./document.pdf --content-type application/pdf',
+      'linear upload ./image.png --markdown',
+    ],
   },
   info: {
     description: 'Show comprehensive CLI documentation (this command)',
@@ -658,6 +790,34 @@ const ENTITY_SCHEMAS = {
       createdAt: 'Creation timestamp',
     },
   },
+  documents: {
+    entity: 'documents',
+    operations: ['list', 'get', 'create', 'update', 'delete'],
+    description: 'Rich text documents in Linear',
+    fields: {
+      id: 'Unique identifier',
+      title: 'Document title',
+      content: 'Markdown content',
+      icon: 'Document icon (emoji)',
+      color: 'Document color (hex)',
+      project: 'Associated project',
+      creator: 'User who created it',
+    },
+  },
+  initiatives: {
+    entity: 'initiatives',
+    operations: ['list', 'get', 'create', 'update', 'delete', 'archive'],
+    description: 'Strategic initiatives grouping projects',
+    fields: {
+      id: 'Unique identifier',
+      name: 'Initiative name',
+      description: 'Initiative description',
+      status: 'Planned/Active/Completed',
+      targetDate: 'Target completion date',
+      owner: 'Initiative owner',
+      projects: 'Associated projects',
+    },
+  },
 }
 
 const WORKFLOWS = {
@@ -746,7 +906,7 @@ export default class Info extends Command {
 
       print(
         success({
-          version: '0.6.0',
+          version: '0.7.0',
           commands: compactCommands,
           configKeys: CONFIG_KEYS,
           note: 'Use "linear info" for full documentation with examples and workflows',
@@ -758,7 +918,7 @@ export default class Info extends Command {
     // Full documentation
     print(
       success({
-        version: '0.6.0',
+        version: '0.7.0',
         overview: {
           description: 'CLI for interacting with Linear, designed for LLMs and agents',
           authentication: 'Run "linear auth login" or set LINEAR_API_KEY environment variable',

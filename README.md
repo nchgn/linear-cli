@@ -14,7 +14,7 @@ A CLI for interacting with [Linear](https://linear.app), designed for LLMs and a
 - **Configurable defaults**: Set default team to skip `--team-id` on every command
 - **Bulk operations**: Update multiple issues at once with `bulk-update` and `bulk-label`
 - **Schema introspection**: Discover available operations programmatically
-- **Full CRUD**: Issues, projects, labels, comments, templates, milestones
+- **Full CRUD**: Issues, projects, labels, comments, templates, milestones, documents, initiatives
 - **Issue relations**: Manage blocks, duplicates, and related issues
 - **Project management**: Projects, milestones, and status updates
 - **Team management**: List and browse teams, states, users
@@ -106,9 +106,12 @@ linear issues list --format plain
 # Get a specific issue
 linear issues get ENG-123
 linear issues get ENG-123 --format table
+linear issues get ENG-123 --with-attachments  # Include linked PRs, commits
 
 # Create an issue
 linear issues create --title "Bug fix" --team-id <team-id>
+linear issues create --title "Task" --team-id <team-id> --due-date 2024-12-31
+linear issues create --title "Sprint work" --team-id <team-id> --cycle-id <cycle-id>
 linear issues create --input '{"title":"Feature","teamId":"xxx","priority":2}'
 
 # Update an issue
@@ -286,6 +289,70 @@ linear cycles current --team ENG
 
 # Get cycle details
 linear cycles get CYCLE_ID
+```
+
+### Documents
+
+```bash
+# List documents
+linear documents list
+
+# Get document details
+linear documents get DOCUMENT_ID
+
+# Create a document
+linear documents create --title "Meeting Notes"
+linear documents create --title "Specs" --content "# Overview\n\nDetails here..."
+linear documents create --title "Project Doc" --project-id PROJECT_ID
+
+# Update a document
+linear documents update DOCUMENT_ID --title "New Title"
+linear documents update DOCUMENT_ID --content "Updated content"
+
+# Delete a document
+linear documents delete DOCUMENT_ID
+```
+
+### Initiatives
+
+```bash
+# List initiatives
+linear initiatives list
+linear initiatives list --status Active
+linear initiatives list --status Completed
+
+# Get initiative details
+linear initiatives get INITIATIVE_ID
+
+# Create an initiative
+linear initiatives create --name "Q1 Goals"
+linear initiatives create --name "Product Launch" --status Active --target-date 2024-12-31
+
+# Update an initiative
+linear initiatives update INITIATIVE_ID --name "New Name"
+linear initiatives update INITIATIVE_ID --status Completed
+
+# Archive/unarchive an initiative
+linear initiatives archive INITIATIVE_ID
+linear initiatives archive INITIATIVE_ID --unarchive
+
+# Delete an initiative
+linear initiatives delete INITIATIVE_ID
+```
+
+### Upload Files
+
+```bash
+# Upload a file and get the asset URL
+linear upload ./screenshot.png
+linear upload ./document.pdf
+
+# Output as markdown (for embedding in descriptions)
+linear upload ./image.png --markdown
+# Returns: ![image.png](https://linear-uploads.s3.amazonaws.com/...)
+
+# Specify content type
+linear upload ./file.dat --content-type application/octet-stream
 ```
 
 ### Users

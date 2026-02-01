@@ -11,6 +11,7 @@ export default class IssuesGet extends Command {
   static override examples = [
     '<%= config.bin %> issues get ENG-123',
     '<%= config.bin %> issues get ENG-123 --format table',
+    '<%= config.bin %> issues get ENG-123 --with-attachments',
     '<%= config.bin %> issues get abc123',
   ]
 
@@ -28,6 +29,10 @@ export default class IssuesGet extends Command {
       options: ['json', 'table', 'plain'],
       default: 'json',
     }),
+    'with-attachments': Flags.boolean({
+      description: 'Include attachments (linked PRs, commits, etc.)',
+      default: false,
+    }),
   }
 
   public async run(): Promise<void> {
@@ -44,12 +49,13 @@ export default class IssuesGet extends Command {
       }
 
       // Fetch related data
-      const [state, assignee, team, labels, comments] = await Promise.all([
+      const [state, assignee, team, labels, comments, attachments] = await Promise.all([
         issue.state,
         issue.assignee,
         issue.team,
         issue.labels(),
         issue.comments(),
+        flags['with-attachments'] ? issue.attachments() : Promise.resolve(null),
       ])
 
       const data = {
@@ -91,6 +97,17 @@ export default class IssuesGet extends Command {
           color: label.color,
         })),
         commentsCount: comments.nodes.length,
+        ...(attachments && {
+          attachments: attachments.nodes.map((attachment) => ({
+            id: attachment.id,
+            title: attachment.title,
+            subtitle: attachment.subtitle ?? null,
+            url: attachment.url,
+            sourceType: attachment.sourceType ?? null,
+            metadata: attachment.metadata,
+            createdAt: attachment.createdAt,
+          })),
+        }),
       }
 
       if (format === 'json') {
@@ -107,6 +124,7 @@ export default class IssuesGet extends Command {
             labels: data.labels.map((l) => l.name).join(', ') || 'None',
             estimate: data.estimate ?? 'None',
             comments: data.commentsCount,
+            ...('attachments' in data && {attachments: data.attachments?.length ?? 0}),
             url: data.url,
             createdAt: data.createdAt,
             updatedAt: data.updatedAt,

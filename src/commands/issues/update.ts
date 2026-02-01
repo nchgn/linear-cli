@@ -55,6 +55,12 @@ export default class IssuesUpdate extends Command {
     'label-ids': Flags.string({
       description: 'Comma-separated label IDs (replaces existing labels)',
     }),
+    'due-date': Flags.string({
+      description: 'Due date (YYYY-MM-DD, use empty string to clear)',
+    }),
+    'cycle-id': Flags.string({
+      description: 'Cycle (sprint) ID (use empty string to remove from cycle)',
+    }),
   }
 
   public async run(): Promise<void> {
@@ -87,6 +93,12 @@ export default class IssuesUpdate extends Command {
         if (flags['project-id']) input.projectId = flags['project-id']
         if (flags.estimate !== undefined) input.estimate = flags.estimate
         if (flags['label-ids']) input.labelIds = flags['label-ids'].split(',')
+        if (flags['due-date'] !== undefined) {
+          input.dueDate = flags['due-date'] || null
+        }
+        if (flags['cycle-id'] !== undefined) {
+          input.cycleId = flags['cycle-id'] || null
+        }
 
         if (Object.keys(input).length === 0) {
           throw new CliError(ErrorCodes.INVALID_INPUT, 'No update fields provided. Use --input or individual flags.')

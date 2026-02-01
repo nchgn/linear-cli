@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2025-02-01
+
+### Added
+
+- `linear documents list/get/create/update/delete` - Full document management
+- `linear initiatives list/get/create/update/delete/archive` - Initiative management for strategic planning
+- `linear upload` - Upload files to Linear and get asset URLs
+- `--with-attachments` flag for `issues get` - Show linked PRs, commits, etc.
+- `--due-date` and `--cycle-id` flags for `issues create` and `issues update`
+
 ## [0.6.0] - 2025-02-01
 
 ### Added
@@ -63,7 +73,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - JSON output format for all commands
 - Environment variable support for API key
 
-[Unreleased]: https://github.com/nchgn/linear-cli-agents/compare/v0.5.1...HEAD
+[Unreleased]: https://github.com/nchgn/linear-cli-agents/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/nchgn/linear-cli-agents/compare/v0.6.0...v0.7.0
+[0.6.0]: https://github.com/nchgn/linear-cli-agents/compare/v0.5.1...v0.6.0
 [0.5.1]: https://github.com/nchgn/linear-cli-agents/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/nchgn/linear-cli-agents/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/nchgn/linear-cli-agents/compare/v0.1.1...v0.4.1

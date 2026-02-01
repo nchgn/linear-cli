@@ -52,6 +52,12 @@ export default class IssuesCreate extends Command {
     'label-ids': Flags.string({
       description: 'Comma-separated label IDs',
     }),
+    'due-date': Flags.string({
+      description: 'Due date (YYYY-MM-DD)',
+    }),
+    'cycle-id': Flags.string({
+      description: 'Cycle (sprint) ID',
+    }),
   }
 
   public async run(): Promise<void> {
@@ -95,6 +101,8 @@ export default class IssuesCreate extends Command {
         if (flags['project-id']) input.projectId = flags['project-id']
         if (flags.estimate !== undefined) input.estimate = flags.estimate
         if (flags['label-ids']) input.labelIds = flags['label-ids'].split(',')
+        if (flags['due-date']) input.dueDate = flags['due-date']
+        if (flags['cycle-id']) input.cycleId = flags['cycle-id']
       }
 
       // Create the issue
