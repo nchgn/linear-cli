@@ -10,6 +10,9 @@ A CLI for interacting with [Linear](https://linear.app), designed for LLMs and a
 
 - **JSON output**: All commands return structured JSON, perfect for parsing by LLMs
 - **Multiple formats**: JSON (default), table (colored), or plain text output
+- **Comprehensive docs**: `linear info` returns full CLI documentation in one command
+- **Configurable defaults**: Set default team to skip `--team-id` on every command
+- **Bulk operations**: Update multiple issues at once with `bulk-update` and `bulk-label`
 - **Schema introspection**: Discover available operations programmatically
 - **Full CRUD**: Issues, projects, labels, comments, templates, milestones
 - **Issue relations**: Manage blocks, duplicates, and related issues
@@ -25,6 +28,25 @@ A CLI for interacting with [Linear](https://linear.app), designed for LLMs and a
 npm install -g linear-cli-agents
 # or
 pnpm add -g linear-cli-agents
+```
+
+## Quick Start
+
+```bash
+# Install
+npm install -g linear-cli-agents
+
+# Authenticate
+linear auth login
+
+# Get full CLI documentation (recommended for LLMs)
+linear info
+
+# Configure default team (optional, skips --team-id on every command)
+linear config set default-team-id YOUR_TEAM_ID
+
+# Add CLI instructions to your CLAUDE.md (optional)
+linear setup
 ```
 
 ## Authentication
@@ -47,6 +69,20 @@ linear me
 
 # Logout
 linear auth logout
+```
+
+## Configuration
+
+```bash
+# Set default team (skips --team-id on create commands)
+linear config set default-team-id YOUR_TEAM_UUID
+linear config set default-team-key TEAM_KEY
+
+# Get a config value
+linear config get default-team-id
+
+# List all config
+linear config list
 ```
 
 ## Usage
@@ -89,6 +125,14 @@ linear issues archive ENG-123 --unarchive
 # Manage labels on issues
 linear issues add-labels ENG-123 --label-ids LABEL_ID1,LABEL_ID2
 linear issues remove-labels ENG-123 --label-ids LABEL_ID1
+
+# Bulk update multiple issues at once
+linear issues bulk-update --ids ENG-1,ENG-2,ENG-3 --state-id STATE_ID
+linear issues bulk-update --ids ENG-1,ENG-2 --priority 2 --assignee-id USER_ID
+
+# Bulk add/remove labels from multiple issues
+linear issues bulk-label --ids ENG-1,ENG-2,ENG-3 --add-labels LABEL1,LABEL2
+linear issues bulk-label --ids ENG-1,ENG-2 --remove-labels LABEL1
 ```
 
 ### Projects
@@ -378,25 +422,36 @@ linear issues list --format table --no-color
 
 The CLI is designed to be easily used by LLMs and AI agents:
 
-1. **Discover capabilities**: Use `linear schema` to understand available operations
+1. **Single discovery command**: Use `linear info` to get complete documentation in one JSON response
 2. **Structured output**: All responses are JSON with consistent format
-3. **Error codes**: Programmatic error handling via error codes
-4. **Raw queries**: Use `linear query` for complex operations not covered by built-in commands
+3. **Configurable defaults**: Set default team to reduce command complexity
+4. **Bulk operations**: Update multiple issues efficiently
+5. **Error codes**: Programmatic error handling via error codes
 
 ### Example LLM Workflow
 
 ```bash
-# 1. Discover what operations are available
-linear schema
+# 1. Get complete CLI documentation in one command
+linear info
 
-# 2. Get details about issues
-linear schema issues
+# 2. Or get compact version for limited context
+linear info --compact
 
-# 3. List issues assigned to current user
-linear issues list --assignee me
+# 3. Create issues (uses default team if configured)
+linear issues create --title "From LLM"
 
-# 4. Create a new issue
-linear issues create --input '{"title":"From LLM","teamId":"xxx"}'
+# 4. Bulk update multiple issues
+linear issues bulk-update --ids ENG-1,ENG-2,ENG-3 --state-id STATE_ID
+```
+
+### Claude Code Integration
+
+```bash
+# Add CLI instructions to CLAUDE.md
+linear setup
+
+# Remove instructions
+linear setup --remove
 ```
 
 ## Development
