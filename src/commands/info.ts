@@ -697,7 +697,7 @@ export default class Info extends Command {
 
       print(
         success({
-          version: '0.5.0',
+          version: '0.5.1',
           commands: compactCommands,
           configKeys: CONFIG_KEYS,
           note: 'Use "linear info" for full documentation with examples and workflows',
@@ -709,7 +709,7 @@ export default class Info extends Command {
     // Full documentation
     print(
       success({
-        version: '0.5.0',
+        version: '0.5.1',
         overview: {
           description: 'CLI for interacting with Linear, designed for LLMs and agents',
           authentication: 'Run "linear auth login" or set LINEAR_API_KEY environment variable',
